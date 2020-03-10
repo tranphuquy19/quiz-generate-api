@@ -71,19 +71,19 @@
           <div class="form-row">
             <div class="form-group col-md-3">
               <label for="inputAddress">Bài</label>
-              <select id="lesson" class="form-control" v-model="opts.lesson">
-                <option v-for="(value, index) in meta.lessons" :key="index" :value="value">{{value}}</option>
+              <select class="form-control" v-model="opts.lesson">
+                <option v-for="(value, index) in meta.lessons" :key="index" :value="value" :valueofindex="index">{{value}}</option>
               </select>
             </div>
             <div class="form-group col-md-3">
               <label for="inputAddress2">Từ loại</label>
-              <select id="tl" class="form-control" v-model="opts.tl">
+              <select class="form-control" v-model="opts.tl">
                 <option v-for="(value, index) in meta.tls" :key="index">{{value}}</option>
               </select>
             </div>
             <div class="form-group col-md-6">
               <label for="inputState">Chủ đề</label>
-              <select id="inputState" class="form-control" v-model="opts.category">
+              <select class="form-control" v-model="opts.category">
                 <option v-for="(value, index) in meta.categories" :key="index">{{value}}</option>
               </select>
             </div>
@@ -135,6 +135,7 @@
       el: '#app',
 
       data: {
+        temp: 'ahihi',
         file: '',
         quiz: [],
         opts: {
@@ -145,9 +146,9 @@
           category: ''
         },
         meta: {
-          lessons: [1,2,3,4],
-          tls: [5,6,7,8],
-          categories: [12,12,14]
+          lessons: [1, 2, 3, 4],
+          tls: [5, 6, 7, 8],
+          categories: [12, 12, 14]
         }
       },
 

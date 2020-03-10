@@ -29,6 +29,7 @@ router.post('/upload', (req, res, next) => {
 
 router.post('/generate', (req, res, next) => {
   let { xlsFile, filters, sheet, isGenerate } = req.body;
+  console.log(req.body);
   if (fs.existsSync(`${xlsDir}/${xlsFile}.xlsx`)) {
     readExcelFile(fs.createReadStream(`${xlsDir}/${xlsFile}.xlsx`), { sheet: sheet | 1 }).then(data => {
       data.splice(0, 1);
@@ -58,13 +59,18 @@ router.post('/generate', (req, res, next) => {
           let otherAns = temp.filter(f => { return e.name !== f.name });
 
           otherAns = _.shuffle(otherAns);
+          if (otherAns.length <= 3) {
+            new Error();
+          } else {
+            // console.log(temp);
+            let j = { ...e };
+            j.a = e.name;
+            j.b = otherAns.pop().name;
+            j.c = otherAns.pop().name;
+            j.d = otherAns.pop().name;
+            return j;
+          }
 
-          let j = { ...e };
-          j.a = e.name;
-          j.b = otherAns.pop().name;
-          j.c = otherAns.pop().name;
-          j.d = otherAns.pop().name;
-          return j;
         });
         res.json(generated);
       } else {
@@ -87,9 +93,9 @@ router.post('/metadata', (req, res, next) => {
       let category = new Set();
 
       data.map(e => {
-        if(e[1]) lesson.add(e[1]);
-        if(e[3]) tl.add(e[3]);
-        if(e[4]) category.add(e[4]);
+        if (e[1]) lesson.add(e[1]);
+        if (e[3]) tl.add(e[3]);
+        if (e[4]) category.add(e[4]);
       });
 
       let opts = {
