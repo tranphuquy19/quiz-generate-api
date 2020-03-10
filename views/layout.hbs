@@ -1,10 +1,217 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>{{title}}</title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
-    {{{body}}}
-  </body>
+<!doctype html>
+<html lang="en">
+
+<head>
+  <title>Title</title>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+
+<body>
+  {{{body}}}
+  <nav class="navbar navbar-expand-sm navbar-light bg-light">
+    <a class="navbar-brand" href="#">JHUB Quiz generate</a>
+    <button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse" data-target="#collapsibleNavId"
+      aria-controls="collapsibleNavId" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="collapsibleNavId">
+      <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+        <li class="nav-item active">
+          <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://www.facebook.com/tranphuquy19">Quick support</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-toggle="dropdown" aria-haspopup="true"
+            aria-expanded="false">Dropdown</a>
+          <div class="dropdown-menu" aria-labelledby="dropdownId">
+            <a class="dropdown-item" href="#">Action 1</a>
+            <a class="dropdown-item" href="#">Action 2</a>
+          </div>
+        </li>
+      </ul>
+      <form class="form-inline my-2 my-lg-0">
+        <input class="form-control mr-sm-2" type="text" placeholder="Search">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+      </form>
+    </div>
+  </nav>
+  <div id="app" class="container">
+    <div class="row mt-5">
+      <div class="col-md-5">
+        <form>
+          <div class="form-group">
+            <input type="file" id="file" ref="file" v-on:change="handleFileUpload()" class="form-control-file" />
+            <label class="custom-file-label" for="file">Choose file</label>
+          </div>
+        </form>
+        <button class="btn btn-primary" v-on:click="submitFile()">Submit</button>
+      </div>
+      <div class="col-md-7">
+        <form>
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="xlsID" @keyup.enter.tab="getMetaData">XLS ID</label>
+              <input type="text" class="form-control" id="xlsId" placeholder="N5" v-model="opts.xlsId">
+            </div>
+            <div class="form-group col-md-6">
+              <label for="xlsSheetName">Tên Sheet</label>
+              <input type="text" class="form-control" id="xlsSheetName" placeholder="Sum | default is first sheet"
+                v-model="opts.xlsSheetName">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-md-3">
+              <label for="inputAddress">Bài</label>
+              <select id="lesson" class="form-control" v-model="opts.lesson">
+                <option v-for="(value, index) in meta.lessons" :key="index" :value="value">{{value}}</option>
+              </select>
+            </div>
+            <div class="form-group col-md-3">
+              <label for="inputAddress2">Từ loại</label>
+              <select id="tl" class="form-control" v-model="opts.tl">
+                <option v-for="(value, index) in meta.tls" :key="index">{{value}}</option>
+              </select>
+            </div>
+            <div class="form-group col-md-6">
+              <label for="inputState">Chủ đề</label>
+              <select id="inputState" class="form-control" v-model="opts.category">
+                <option v-for="(value, index) in meta.categories" :key="index">{{value}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="gridCheck">
+              <label class="form-check-label" for="gridCheck">
+                Check me out
+              </label>
+            </div>
+          </div>
+          <p v-for='(value, index) in meta.tl' :key='index'>{{value}}</p>
+          <button type="button" class="btn btn-warning" @click="getMetaData">Lọc</button>
+          <button type="button" class="btn btn-primary">Lấy dữ liệu</button>
+          <button type="button" class="btn btn-success">Download</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  </div>
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+  <script>
+    Vue.config.devtools = true;
+    let client = (endpoint, method = 'GET', body, isFile = false) => {
+      return axios({
+        method: method,
+        url: `${location.origin}/${endpoint}`,
+        data: body,
+        headers: {
+          'Content-Type': isFile ? 'multipart/form-data' : 'application/json'
+        }
+      });
+    };
+
+    new Vue({
+      el: '#app',
+
+      data: {
+        file: '',
+        quiz: [],
+        opts: {
+          xlsId: '',
+          xlsSheetName: '',
+          lesson: '',
+          tl: '',
+          category: ''
+        },
+        meta: {
+          lessons: [1,2,3,4],
+          tls: [5,6,7,8],
+          categories: [12,12,14]
+        }
+      },
+
+      computed: {
+        getUriUpload() {
+          return `location.origin/upload`;
+        }
+      },
+
+      methods: {
+        handleFileUpload() {
+          this.file = this.$refs.file.files[0];
+        },
+        submitFile() {
+          let formData = new FormData();
+          formData.append('xlsFile', this.file);
+          axios.post('/upload',
+            formData,
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            }
+          ).then(function () {
+            alert("Upload thành công");
+          })
+            .catch(function () {
+              alert("Upload thất bại");
+            });
+        },
+        getMetaData(e) {
+          console.log(this);
+          try {
+            client('metadata', 'POST', { xlsFile: this.opts.xlsId }, false).then(res => {
+              const { lesson, tl, category } = res.data;
+              console.log(res.data);
+              this.meta.lessons = lesson;
+              this.meta.tls = tl;
+              this.meta.categories = category;
+            });
+          } catch (e) {
+            console.log(e);
+          }
+        }
+      },
+      beforeMount() {
+        try {
+          client('generate', 'POST', {
+            filters: {
+              tl: "N",
+              lesson: 7
+            },
+            xlsFile: "n5",
+            isGenerate: true
+          }).then(res => {
+            this.quiz = res.data;
+            console.log(res.data);
+          });
+        } catch (e) {
+          console.log(e);
+        }
+      }//end mounted
+    })
+  </script>
+</body>
+
 </html>
