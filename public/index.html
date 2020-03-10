@@ -101,7 +101,7 @@
                         </div>
                     </div>
                     <p v-for='(value, index) in meta.tl' :key='index'>{{value}}</p>
-                    <button type="button" :class="{'btn': true, 'btn-warning': true}" @click="getMetaData">Lọc</button>
+                    <button type="button" :class="{'btn': true, 'btn-warning': true}" @click="getMetaData">Check</button>
                     <button type="button" :class="{'btn': true, 'btn-primary': true, disabled: disabled }"
                         @click="handleGetRows">Lấy dữ
                         liệu</button>
@@ -257,20 +257,32 @@
                         console.log(e);
                     }
                 },
-                download(arrData) {
-                    let csvContent = "data:text/csv;charset=utf-8,";
-                    csvContent += [
-                        Object.keys(arrData[0]).join(";"),
-                        ...arrData.map(item => Object.values(item).join(";"))
-                    ]
-                        .join("\n")
-                        .replace(/(^\[)|(\]$)/gm, "");
+                download(rows) {
+                    var csv = '1,2,3,4,5,6,7,8,9,10,11,12,13,14\n';
 
-                    const data = encodeURI(csvContent);
-                    const link = document.createElement("a");
-                    link.setAttribute("href", data);
-                    link.setAttribute("download", "export.csv");
-                    link.click();
+                    let data = [];
+
+                    rows.map(e => {
+                        let temp = [];
+                        Object.keys(e).map(i => {
+                            let tempString = e[i] ? String(e[i]).replace(',', ';') : ' ';
+                            temp.push(tempString);
+                        });
+                        data.push(temp);
+                    });
+
+                    console.log(data);
+                    data.forEach(function (row) {
+                        csv += row.join(',');
+                        csv += "\n";
+                    });
+
+                    console.log(csv);
+                    var hiddenElement = document.createElement('a');
+                    hiddenElement.href = 'data:text/csv;charset=utf-8,%EF%BB%BF' + encodeURI(csv);
+                    hiddenElement.target = '_blank';
+                    hiddenElement.download = 'generate_result.csv';
+                    hiddenElement.click();
                 }
             },
             beforeMount() {
