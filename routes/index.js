@@ -80,7 +80,7 @@ router.post('/generate', (req, res, next) => {
 
           otherAns = _.shuffle(otherAns);
           if (otherAns.length <= 3) {
-            next(new Error());
+            next();
           } else {
             let tempAns = [];
             tempAns.push(e.name);
