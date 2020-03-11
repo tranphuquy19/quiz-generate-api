@@ -44,7 +44,7 @@
     </nav>
     <div id="app" class="container">
         <div class="row mt-5">
-            <div class="col-md-5">
+            <div class="col-md-5 mt-4">
                 <form>
                     <div class="form-group">
                         <input type="file" id="file" ref="file" v-on:change="handleFileUpload()"
@@ -65,6 +65,14 @@
                             <label for="xlsSheetName">Tên Sheet</label>
                             <input type="text" class="form-control" id="xlsSheetName"
                                 placeholder="Sum | default is first sheet" v-model="opts.xlsSheetName">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="partionLesson" @keyup.enter.tab="getMetaData">Bài</label>
+                            <input type="text" class="form-control" id="partionLesson" placeholder="* or 1-2,5,9"
+                                v-model="opts.partionLesson">
                         </div>
                     </div>
 
@@ -101,7 +109,8 @@
                         </div>
                     </div>
                     <p v-for='(value, index) in meta.tl' :key='index'>{{value}}</p>
-                    <button type="button" :class="{'btn': true, 'btn-warning': true}" @click="getMetaData">Check</button>
+                    <button type="button" :class="{'btn': true, 'btn-warning': true}"
+                        @click="getMetaData">Check</button>
                     <button type="button" :class="{'btn': true, 'btn-primary': true, disabled: disabled }"
                         @click="handleGetRows">Lấy dữ
                         liệu</button>
@@ -190,7 +199,8 @@
                     xlsSheetName: '',
                     lesson: '',
                     tl: '',
-                    category: ''
+                    category: '',
+                    partionLesson: '*'
                 },
                 meta: {
                     lessons: [],
@@ -244,9 +254,10 @@
                             tl: this.opts.tl ? this.opts.tl : undefined,
                             category: this.opts.category ? this.opts.category : undefined
                         },
+                        partionLesson: this.opts.partionLesson ? this.opts.partionLesson : undefined,
                         xlsFile: this.opts.xlsId,
                         isGenerate: true
-                    }
+                    };
                     try {
                         client('generate', 'POST', payload, false).then(res => {
                             this.quiz = res.data;

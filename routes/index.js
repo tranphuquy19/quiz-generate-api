@@ -28,7 +28,7 @@ router.post('/upload', (req, res, next) => {
 });
 
 router.post('/generate', (req, res, next) => {
-  let { xlsFile, filters, sheet, isGenerate } = req.body;
+  let { xlsFile, filters, sheet, isGenerate, partionLesson } = req.body;
   console.log(req.body);
   if (fs.existsSync(`${xlsDir}/${xlsFile}.xlsx`)) {
     readExcelFile(fs.createReadStream(`${xlsDir}/${xlsFile}.xlsx`), { sheet: sheet | 1 }).then(data => {
@@ -46,6 +46,26 @@ router.post('/generate', (req, res, next) => {
         meaning: e[8]
       }));
 
+      if (partionLesson) {
+        let temp2 = [];
+        if (partionLesson.trim().includes('*')) {
+          temp2 = temp2.concat(temp);
+        } else {
+          let lessons = partionLesson.replace(' ', '').split(',');
+          lessons.map(le => {
+            temp.map(te => {
+              if (String(le).includes('-')) {
+                let [m, n] = le.split('-');
+                if (te.lesson >= m && te.lesson <= n) temp2.push(te);
+              } else {
+                if (te.lesson == le) temp2.push(te);
+              }
+            })
+          });
+        }
+        temp = temp2;
+      }
+
       if (filters) {
         Object.keys(filters).map(e => {
           temp = temp.filter(t => {
@@ -60,14 +80,21 @@ router.post('/generate', (req, res, next) => {
 
           otherAns = _.shuffle(otherAns);
           if (otherAns.length <= 3) {
-            new Error();
+            next(new Error());
           } else {
-            // console.log(temp);
+            let tempAns = [];
+            tempAns.push(e.name);
+            tempAns.push(otherAns.pop().name);
+            tempAns.push(otherAns.pop().name);
+            tempAns.push(otherAns.pop().name);
+
+            tempAns = _.shuffle(tempAns);
+
             let j = { ...e };
-            j.a = e.name;
-            j.b = otherAns.pop().name;
-            j.c = otherAns.pop().name;
-            j.d = otherAns.pop().name;
+            j.a = tempAns.pop();
+            j.b = tempAns.pop();
+            j.c = tempAns.pop();
+            j.d = tempAns.pop();
             return j;
           }
 
