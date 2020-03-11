@@ -7,7 +7,7 @@ const { xlsDir } = require('../configs');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-  res.render('index', { title: 'Express' });
+ res.redirect('/index.html');
 });
 
 router.post('/upload', (req, res, next) => {
