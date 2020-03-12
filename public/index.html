@@ -1,8 +1,8 @@
 <!doctype html>
-<html lang="en">
+<html lang="vi">
 
 <head>
-    <title>Title</title>
+    <title>JHUB Quiz generator</title>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -14,7 +14,7 @@
 
 <body>
     <nav class="navbar navbar-expand-sm navbar-light bg-light">
-        <a class="navbar-brand" href="#">JHUB Quiz generate</a>
+        <a class="navbar-brand" href="#">JHUB Quiz generator</a>
         <button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse" data-target="#collapsibleNavId"
             aria-controls="collapsibleNavId" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -29,10 +29,10 @@
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-toggle="dropdown"
-                        aria-haspopup="true" aria-expanded="false">Dropdown</a>
+                        aria-haspopup="true" aria-expanded="false">Template mẫu</a>
                     <div class="dropdown-menu" aria-labelledby="dropdownId">
-                        <a class="dropdown-item" href="#">Action 1</a>
-                        <a class="dropdown-item" href="#">Action 2</a>
+                        <a class="dropdown-item" href="/vocalbulary_template.xlsx" target="blank">Từ vựng</a>
+                        <a class="dropdown-item" href="/kanji_template.xlsx">Kanji</a>
                     </div>
                 </li>
             </ul>
@@ -76,7 +76,7 @@
                         </div>
                     </div>
 
-                    <div class="form-row">
+                    <div class="form-row" v-if="!isKanji">
                         <div class="form-group col-md-3">
                             <label for="inputAddress">Bài</label>
                             <select class="form-control" v-model="opts.lesson">
@@ -100,15 +100,16 @@
                             </select>
                         </div>
                     </div>
+
                     <div class="form-group">
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="gridCheck">
-                            <label class="form-check-label" for="gridCheck">
-                                Check me out
+                            <input class="form-check-input" type="checkbox" id="checkKanji" @click="toggleKanji()">
+                            <label class="form-check-label" for="checkKanji">
+                                Dạng đề kanji
                             </label>
                         </div>
                     </div>
-                    <p v-for='(value, index) in meta.tl' :key='index'>{{value}}</p>
+
                     <button type="button" :class="{'btn': true, 'btn-warning': true}"
                         @click="getMetaData">Check</button>
                     <button type="button" :class="{'btn': true, 'btn-primary': true, disabled: disabled }"
@@ -116,10 +117,12 @@
                         liệu</button>
                     <button type="button" :class="{'btn': true, 'btn-success': true, disabled: disabled }"
                         @click="download(rows)">Download</button>
+                    <button type="button" :class="{'btn': true, 'btn-danger': true, disabled: disabled }"
+                        @click="copyToClipboard">Copy table to clipboard</button>
                 </form>
             </div>
             <div class="col-md-12 mt-3">
-                <table class="table table-bordered table-sm">
+                <table class="table table-bordered table-sm" v-if="!isKanji" id="vocalTable">
                     <thead>
                         <tr>
                             <th scope="col">#</th>
@@ -152,6 +155,40 @@
                             <td>{{value.b}}</td>
                             <td>{{value.c}}</td>
                             <td>{{value.d}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table table-bordered table-sm" id="kanjiTable" v-else>
+                    <thead>
+                        <tr>
+                            <th scope=" col">#</th>
+                            <th scope="col">Question</th>
+                            <th scope="col">Pronounce</th>
+                            <th scope="col">Lesson</th>
+                            <th scope="col">a</th>
+                            <th scope="col">a_check</th>
+                            <th scope="col">b</th>
+                            <th scope="col">b_check</th>
+                            <th scope="col">c</th>
+                            <th scope="col">c_check</th>
+                            <th scope="col">d</th>
+                            <th scope="col">d_check</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(value, index) in rows" :key="index">
+                            <td>{{value.id}}</td>
+                            <td>{{value.kanjiGoi}}</td>
+                            <td>{{value.pronounce}}</td>
+                            <td>{{value.lesson}}</td>
+                            <td>{{value.a}}</td>
+                            <td :class="{'bg-success': value.aCheck}">{{value.aCheck}}</td>
+                            <td>{{value.b}}</td>
+                            <td :class="{'bg-success': value.bCheck}">{{value.bCheck}}</td>
+                            <td>{{value.c}}</td>
+                            <td :class="{'bg-success': value.cCheck}">{{value.cCheck}}</td>
+                            <td>{{value.d}}</td>
+                            <td :class="{'bg-success': value.dCheck}">{{value.dCheck}}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -189,6 +226,7 @@
             el: '#app',
 
             data: {
+                isKanji: false,
                 disabled: true,
                 rows: [],
                 temp: 'ahihi',
@@ -238,14 +276,26 @@
                         });
                 },
                 getMetaData() {
-                    client('metadata', 'POST', { xlsFile: this.opts.xlsId }, false).then(res => {
-                        const { lesson, tl, category } = res.data;
-                        console.log(res.data);
-                        this.meta.lessons = lesson;
-                        this.meta.tls = tl;
-                        this.meta.categories = category;
-                        this.disabled = false;
-                    }).catch(err => alert('Không tìm thấy'));
+                    if (!this.isKanji) {
+                        client('metadata', 'POST', { xlsFile: this.opts.xlsId }, false).then(res => {
+                            const { lesson, tl, category } = res.data;
+                            console.log(res.data);
+                            this.meta.lessons = lesson;
+                            this.meta.tls = tl;
+                            this.meta.categories = category;
+                            this.disabled = false;
+                        }).catch(err => alert('Không tìm thấy'));
+                    } else {
+                        client('kanjimetadata', 'POST', { xlsFile: this.opts.xlsId }, false).then(res => {
+                            // const { lesson, tl, category } = res.data;
+                            // console.log(res.data);
+                            // this.meta.lessons = lesson;
+                            // this.meta.tls = tl;
+                            // this.meta.categories = category;
+                            this.disabled = false;
+                            alert(res.data.message);
+                        }).catch(err => alert('Không tìm thấy'));
+                    }
                 }, //
                 handleGetRows() {
                     let payload = {
@@ -259,17 +309,23 @@
                         isGenerate: true
                     };
                     try {
-                        client('generate', 'POST', payload, false).then(res => {
-                            this.quiz = res.data;
-                            console.log(res.data);
-                            this.rows = res.data;
-                        });
+                        if (!this.isKanji) {
+                            client('generate', 'POST', payload, false).then(res => {
+                                console.log(res.data);
+                                this.rows = res.data;
+                            });
+                        } else {
+                            client('kanji', 'POST', payload, false).then(res => {
+                                console.log(res.data);
+                                this.rows = res.data;
+                            });
+                        }
                     } catch (e) {
                         console.log(e);
                     }
                 },
                 download(rows) {
-                    var csv = 'id,Bai,STT,LoaiTu,LinhVuc,Ten,Kanji,HanViet,Nghia,a,b,c,d\n';
+                    var csv = this.isKanji ? 'stt,question,pronounce,lesson,a,is_A_Correct,b,is_B_Correct,c,is_C_Correct,d,is_D_Correct' : 'id,Bai,STT,LoaiTu,LinhVuc,Ten,Kanji,HanViet,Nghia,a,b,c,d\n';
 
                     let data = [];
 
@@ -294,6 +350,34 @@
                     hiddenElement.target = '_blank';
                     hiddenElement.download = 'generate_result.csv';
                     hiddenElement.click();
+                },
+                toggleKanji() {
+                    this.isKanji = !this.isKanji;
+                    this.rows = [];
+                },
+                copyToClipboard() {
+                    let tableId = this.isKanji ? 'kanjiTable' : 'vocalTable';
+                    let el = document.getElementById(tableId);
+                    let body = document.body, range, sel;
+                    if (document.createRange && window.getSelection) {
+                        range = document.createRange();
+                        sel = window.getSelection();
+                        sel.removeAllRanges();
+                        try {
+                            range.selectNodeContents(el);
+                            sel.addRange(range);
+                        } catch (e) {
+                            range.selectNode(el);
+                            sel.addRange(range);
+                        }
+                        document.execCommand("copy");
+
+                    } else if (body.createTextRange) {
+                        range = body.createTextRange();
+                        range.moveToElementText(el);
+                        range.select();
+                        range.execCommand("Copy");
+                    }
                 }
             },
             beforeMount() {
