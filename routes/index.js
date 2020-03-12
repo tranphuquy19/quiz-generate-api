@@ -99,10 +99,10 @@ router.post('/kanji', (req, res, next) => {
           let ansPop = [];
 
           kjTemp.map(e => {
-            let ansTemp_ = kjAnsTemp.filter(a => {
+            kjAnsTemp.filter(a => {
               if (a !== e.pronounce) ansPop.push(a);
             });
-            ansTemp_ = _.shuffle(ansTemp_);
+            ansPop = _.shuffle(ansPop);
             let ansPart = [];
 
             ansPart.push({ ans: e.pronounce, check: 'TRUE' });
