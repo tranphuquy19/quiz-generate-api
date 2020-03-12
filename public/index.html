@@ -182,13 +182,13 @@
                             <td>{{value.pronounce}}</td>
                             <td>{{value.lesson}}</td>
                             <td>{{value.a}}</td>
-                            <td :class="{'bg-success': value.aCheck}">{{value.aCheck}}</td>
+                            <td :class="{'bg-success': value.aCheck === 'TRUE'}">{{value.aCheck}}</td>
                             <td>{{value.b}}</td>
-                            <td :class="{'bg-success': value.bCheck}">{{value.bCheck}}</td>
+                            <td :class="{'bg-success': value.bCheck === 'TRUE'}">{{value.bCheck}}</td>
                             <td>{{value.c}}</td>
-                            <td :class="{'bg-success': value.cCheck}">{{value.cCheck}}</td>
+                            <td :class="{'bg-success': value.cCheck === 'TRUE'}">{{value.cCheck}}</td>
                             <td>{{value.d}}</td>
-                            <td :class="{'bg-success': value.dCheck}">{{value.dCheck}}</td>
+                            <td :class="{'bg-success': value.dCheck === 'TRUE'}">{{value.dCheck}}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -325,7 +325,7 @@
                     }
                 },
                 download(rows) {
-                    var csv = this.isKanji ? 'stt,question,pronounce,lesson,a,is_A_Correct,b,is_B_Correct,c,is_C_Correct,d,is_D_Correct' : 'id,Bai,STT,LoaiTu,LinhVuc,Ten,Kanji,HanViet,Nghia,a,b,c,d\n';
+                    var csv = this.isKanji ? 'stt,kanji,lesson,hanViet,question,pronounc,meaning,a,is_A_Correct,b,is_B_Correct,c,is_C_Correct,d,is_D_Correct\n' : 'id,Bai,STT,LoaiTu,LinhVuc,Ten,Kanji,HanViet,Nghia,a,b,c,d\n';
 
                     let data = [];
 

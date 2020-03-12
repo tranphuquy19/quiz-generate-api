@@ -105,10 +105,10 @@ router.post('/kanji', (req, res, next) => {
             ansTemp_ = _.shuffle(ansTemp_);
             let ansPart = [];
 
-            ansPart.push({ ans: e.pronounce, check: true });
-            ansPart.push({ ans: ansPop.pop(), check: false });
-            ansPart.push({ ans: ansPop.pop(), check: false });
-            ansPart.push({ ans: ansPop.pop(), check: false });
+            ansPart.push({ ans: e.pronounce, check: 'TRUE' });
+            ansPart.push({ ans: ansPop.pop(), check: 'FALSE' });
+            ansPart.push({ ans: ansPop.pop(), check: 'FALSE' });
+            ansPart.push({ ans: ansPop.pop(), check: 'FALSE' });
 
             ansPart = _.shuffle(ansPart);
 
