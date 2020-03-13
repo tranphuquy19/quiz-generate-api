@@ -89,7 +89,7 @@ router.post('/kanji', (req, res, next) => {
         Array.from(kanjiLessons).map(kl => {
           let kjTemp = [], kjAnsTemp = []; // const of this session
 
-          temp.map(t => {
+          temp.map(t => { //lọc theo bài
             if (t.lesson == kl) {
               kjTemp.push(t);
               kjAnsTemp.push(t.pronounce);
@@ -99,16 +99,24 @@ router.post('/kanji', (req, res, next) => {
           let ansPop = [];
 
           kjTemp.map(e => {
-            kjAnsTemp.filter(a => {
+            kjAnsTemp.map(a => {
               if (a !== e.pronounce) ansPop.push(a);
             });
+
             ansPop = _.shuffle(ansPop);
+            ansPop = _.union(ansPop);
+            ansPop = _.remove(ansPop, (kj) => {
+              return kj != e.pronounce;
+            });
+
             let ansPart = [];
 
             ansPart.push({ ans: e.pronounce, check: 'TRUE' });
             ansPart.push({ ans: ansPop.pop(), check: 'FALSE' });
             ansPart.push({ ans: ansPop.pop(), check: 'FALSE' });
             ansPart.push({ ans: ansPop.pop(), check: 'FALSE' });
+
+            console.log(ansPart);
 
             ansPart = _.shuffle(ansPart);
 
@@ -122,7 +130,7 @@ router.post('/kanji', (req, res, next) => {
               cCheck: ansPart[2].check,
               d: ansPart[3].ans,
               dCheck: ansPart[3].check
-            })
+            });
           }); // end kjTemp
         }); //end kanjiLession
         res.json(generated);
